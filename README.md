@@ -5,10 +5,22 @@ A machine learning model that predicts experimental band gaps of inorganic mater
 Features:
 
 Composition-only input: Just provide the chemical formula
+
 Fast predictions: ~1ms per compound
+
 High accuracy: 0.424 eV MAE on external validation
-Interpretable: SHAP analysis provides physical insights
+
 Easy deployment: Minimal dependencies
+
+Limitaitons:
+
+Polymorph Problem: Cannot distinguish between different crystal structures of the same composition
+
+Band Gap Range: Accuracy decreases for wide-bandgap materials (>4 eV)
+
+Composition Only: Does not consider structural information or synthesis conditions
+
+Inorganic Focus: Optimized for inorganic crystalline materials
 
 # Quick start
 
@@ -169,4 +181,34 @@ if __name__ == "__main__":
 
 This software was created by Cesar Gabriel Vera de la Garza who is advised by Dr. Serguei Fomine.
 
- 
+
+If you use this code or model in your research, please cite:
+
+@article{veradelagarza2025,
+  title={Machine-Learning-Accelerated Band Gap Prediction from Chemical Composition with Near-Experimental Accuracy},
+  author={Vera de la Garza, Cesar Gabriel and Fomine, Serguei},
+  journal={Next Materials},
+  year={2025},
+  doi={TBD}
+}
+
+For Methodology:
+
+@article{matbench2020,
+  title={Matbench: A benchmark for materials property prediction},
+  author={Dunn, Alexander and Wang, Qi and Ganose, Alex and Dopp, Daniel and Jain, Anubhav},
+  journal={npj Computational Materials},
+  volume={6},
+  number={1},
+  pages={138},
+  year={2020}
+}
+
+@article{magpie2016,
+  title={The Materials Agnostic Platform for Informatics and Exploration (Magpie)},
+  author={Ward, Logan and Agrawal, Ankit and Choudhary, Alok and Wolverton, Christopher},
+  journal={Computational Materials Science},
+  volume={125},
+  pages={145--150},
+  year={2016}
+}
