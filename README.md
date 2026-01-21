@@ -1,6 +1,8 @@
+# What is it?
+
 A machine learning model that predicts experimental band gaps of inorganic materials using only chemical composition. The model achieves near-experimental accuracy (MAE = 0.424 eV) on unseen compounds through rigorous external validation.
 
-Features
+Features:
 
 Composition-only input: Just provide the chemical formula
 Fast predictions: ~1ms per compound
@@ -8,40 +10,162 @@ High accuracy: 0.424 eV MAE on external validation
 Interpretable: SHAP analysis provides physical insights
 Easy deployment: Minimal dependencies
 
-#### Installation ####
+# Quick start
 
-# Clone the repository
-git clone https://github.com/cesargabrielvera1-ux/Machine-Learning-Accelerated-Band-Gap-Prediction-from-Chemical-Composition.git
-cd Machine-Learning-Accelerated-Band-Gap-Prediction-from-Chemical-Composition
+Assuming you are using Google Colab...
 
-# Install dependencies
-pip install -r requirements.txt
+1.- Make sure the model "xgboost_final_model.joblib" is available in your session tipically /content/ directory.
 
-# Verify installation
+2.- Please run the following before using the #Script:
 
-python -c "from bandgap_predictor import BandGapPredictor; print('Installation successful!')"
+!pip install pymatgen
 
+pymatgen is MANDATORY for our script to run 
 
-# Quick Start
+3.- In the provided script (see below) there is a section marked with several #### symbols.
+The Section is called: ########### Compositions to predict ##########
+There you can modify the provided examples with chemical compositions you want to explore between " ".
 
-#This is the fastest way to get a band gap prediction. The model uses the Magpie 132 compositional featurizer from pymatgen.
+Feel free to copy and paste the following script and then running it!
 
-# Import the predictor class
-from bandgap_predictor import BandGapPredictor
+# Script:
 
-# Initialize the predictor (this loads the pre-trained XGBoost model)
-predictor = BandGapPredictor()
-
-# Predict the band gap for a compound, e.g., Titanium Dioxide
-result = predictor.predict("TiO2")
-
-# Print the result
-print(f"Compound: {result['formula']}")
-print(f"Predicted Band Gap: {result['predicted_gap']:.3f} eV")
-print(f"Confidence Level: {result['confidence']}")
+#predict_bandgap.py
 
 
 
+import joblib
+import numpy as np
+import pandas as pd
+from pymatgen.core import Composition # Changed import statement
+from matminer.featurizers.composition import ElementProperty
+
+class BandGapPredictor:
+    """
+    Predict experimental band gaps from chemical composition using XGBoost.
+    """
+
+    def __init__(self, model_path='xgboost_final_model.joblib'):
+        """
+        Initialize the predictor.
+
+        Args:
+            model_path: Path to trained XGBoost model (.joblib file)
+        """
+        self.model = joblib.load(model_path)
+        self.featurizer = ElementProperty.from_preset("magpie")
+        self.feature_names = None
+
+    def predict(self, composition_list):
+        """
+        Predict band gaps for a list of chemical compositions.
+
+        Args:
+            composition_list: List of chemical formulas (e.g., ["TiO2", "GaAs"])
+
+        Returns:
+            predictions: Array of predicted band gaps in eV
+        """
+        # Featurize compositions
+        features = self._featurize_compositions(composition_list)
+
+        # Align features with training data
+        features_aligned = self._align_features(features)
+
+        # Make predictions
+        predictions = self.model.predict(features_aligned)
+
+        return predictions
+
+    def predict_single(self, composition):
+        """
+        Predict band gap for a single chemical composition.
+
+        Args:
+            composition: Chemical formula (e.g., "TiO2")
+
+        Returns:
+            band_gap: Predicted band gap in eV
+        """
+        return self.predict([composition])[0]
+
+    def _featurize_compositions(self, composition_list):
+        """
+        Convert chemical formulas to Magpie features.
+        """
+        features_list = []
+
+        for comp_str in composition_list:
+            # Convert to pymatgen Composition
+            comp = Composition(comp_str)
+
+            # Generate Magpie features
+            features = self.featurizer.featurize(comp)
+            features_list.append(features)
+
+        # Convert to DataFrame
+        feature_names = self.featurizer.feature_labels()
+        df = pd.DataFrame(features_list, columns=feature_names)
+
+        # Store feature names (first time only)
+        if self.feature_names is None:
+            self.feature_names = feature_names
+
+        return df
+
+    def _align_features(self, features_df):
+        """
+        Ensure features match the training data format.
+        """
+        # Fill any missing values
+        features_df = features_df.fillna(0)
+
+        # Ensure all columns are numeric
+        for col in features_df.columns:
+            features_df[col] = pd.to_numeric(features_df[col], errors='coerce')
+
+        features_df = features_df.fillna(0)
+
+        return features_df
+
+
+def main():
+    """
+    Example usage of the BandGapPredictor.
+    """
+    # Initialize predictor
+    predictor = BandGapPredictor('xgboost_final_model.joblib')
+
+    ########### Compositions to predict ##########
+    test_compositions = [
+        "TiO2",      # Titanium dioxide
+        "GaAs",      # Gallium arsenide
+        "Si",        # Silicon
+        "ZnO",       # Zinc oxide
+        "CdTe",      # Cadmium telluride
+        "CH3NH3PbI3" # Perovskite (MAPbI3)
+    ]
+
+    # Predict band gaps
+    print("🚀 Predicting Band Gaps...")
+    print("-" * 50)
+
+    predictions = predictor.predict(test_compositions)
+
+    for comp, pred in zip(test_compositions, predictions):
+        print(f"{comp:15} → {pred:.3f} eV")
+
+    print("-" * 50)
+    print(f"✅ Predictions complete!")
+
+    return predictions
+
+
+if __name__ == "__main__":
+    main()
+
+
+# Important
 
 This software was created by Cesar Gabriel Vera de la Garza who is advised by Dr. Serguei Fomine.
 
