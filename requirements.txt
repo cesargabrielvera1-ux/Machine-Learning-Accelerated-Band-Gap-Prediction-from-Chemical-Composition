@@ -6,3 +6,4 @@ pymatgen>=2023.0.0
 joblib>=1.2.0
 matplotlib>=3.7.0
 seaborn>=0.12.0
+pymatgen>=2023.0.0  # Required for Magpie featurizer
