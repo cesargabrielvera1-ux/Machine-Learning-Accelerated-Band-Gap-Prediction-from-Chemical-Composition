@@ -22,7 +22,23 @@ pip install -r requirements.txt
 python -c "from bandgap_predictor import BandGapPredictor; print('Installation successful!')"
 
 
+# Quick Start
 
+#This is the fastest way to get a band gap prediction. The model uses the Magpie 132 compositional featurizer from pymatgen.
+
+# Import the predictor class
+from bandgap_predictor import BandGapPredictor
+
+# Initialize the predictor (this loads the pre-trained XGBoost model)
+predictor = BandGapPredictor()
+
+# Predict the band gap for a compound, e.g., Titanium Dioxide
+result = predictor.predict("TiO2")
+
+# Print the result
+print(f"Compound: {result['formula']}")
+print(f"Predicted Band Gap: {result['predicted_gap']:.3f} eV")
+print(f"Confidence Level: {result['confidence']}")
 
 
 
