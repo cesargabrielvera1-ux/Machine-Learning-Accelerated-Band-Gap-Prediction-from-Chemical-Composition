@@ -47,10 +47,15 @@ Feel free to copy and paste the following script and then running it!
 
 
 import joblib
+
 import numpy as np
+
 import pandas as pd
+
 from pymatgen.core import Composition # Changed import statement
+
 from matminer.featurizers.composition import ElementProperty
+
 
 class BandGapPredictor:
     """
