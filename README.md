@@ -194,7 +194,7 @@ If you use this code or model in your research, please cite:
   author={Vera de la Garza, Cesar Gabriel and Fomine, Serguei},
   journal={Next Materials},
   year={2025},
-  doi={TBD}
+  doi={(https://doi.org/10.1016/j.nxmate.2026.101728)}
 }
 
 For Methodology:
