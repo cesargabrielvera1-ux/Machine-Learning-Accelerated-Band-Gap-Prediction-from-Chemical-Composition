@@ -52,7 +52,7 @@ import numpy as np
 
 import pandas as pd
 
-from pymatgen.core import Composition # Changed import statement
+from pymatgen.core import Composition
 
 from matminer.featurizers.composition import ElementProperty
 
